@@ -13,6 +13,11 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - fullcycle
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   app:
     build:
@@ -25,7 +30,8 @@ services:
       - /usr/src/app/node_modules
     tty: true
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - fullcycle
 
